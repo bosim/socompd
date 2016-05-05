@@ -17,3 +17,4 @@ class Clear(mpdserver.Command):
         self.playlist.playlist_time = 0
 
 mpd.requestHandler.RegisterCommand(Clear)
+

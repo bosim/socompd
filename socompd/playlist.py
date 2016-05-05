@@ -29,9 +29,8 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
             self.playlist_time = int(time.time())
             return self.playlist
 
-
-    def move(self,i,j):
-        pass
-
+    def delete(self, songid):
+        dev.remove_from_queue(songid)
+        self.playlist_time = 0
 
 mpd.requestHandler.Playlist=MpdPlaylist
