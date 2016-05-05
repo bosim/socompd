@@ -1,7 +1,10 @@
 import mpdserver
 import time
 
-from . import mpd, dev, events
+from Queue import Empty
+
+from . import mpd, dev, sub_rendering, sub_transport
+
 
 class Idle(mpdserver.Command):
     def handle_args(self):
@@ -9,15 +12,19 @@ class Idle(mpdserver.Command):
 
     def toMpdMsg(self):
         for i in xrange(0, 100):
+            try:
+                event = sub_rendering.events.get(timeout=0.5)
+                return "changed: mixer\n"
+            except Empty:
+                pass
+            
+            try:
+                event = sub_transport.events.get(timeout=0.5)
+                return "changed: player\n"
+            except Empty:
+                pass
 
-            if len(events) > 0:
-                key = events.keys()[0]
-                events.pop(key)
-                return "changed: " + key + "\n"
-
-            time.sleep(0.1)
-
-        return "changed: player\n"
+        return ""
 
 mpd.requestHandler.RegisterCommand(Idle)
 

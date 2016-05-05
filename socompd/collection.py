@@ -11,13 +11,13 @@ class LsInfo(mpdserver.Command):
     def toMpdMsg(self):
         result = ""
         if self.args.get('directory'):
-            for album in dev.get_albums():
+            for album in dev.get_music_library_information('albums'):
                 if album.title.encode("utf-8") == self.args.get('directory'):
                     for track in dev.browse(album):
                         result = result + "file: " + urllib.unquote(track.resources[0].uri).encode("utf-8") + "\n"
             
         else:
-            for album in dev.get_albums():
+            for album in dev.get_music_library_information('albums'):
                 result = result + "directory: " + album.title.encode("utf-8") + "\n"
 
         return result

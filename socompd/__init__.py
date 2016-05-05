@@ -12,7 +12,8 @@ dev = list(soco.discover())[0]
 mpd=mpdserver.MpdServerDaemon(9999)
 mpd.requestHandler.RegisterCommand(mpdserver.Outputs)
 
-events = {}
+sub_rendering = dev.renderingControl.subscribe()
+sub_transport = dev.avTransport.subscribe()
 
 import playlist
 import playback
