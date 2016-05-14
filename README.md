@@ -15,7 +15,7 @@ Create a virtualenv
 
      $ mkdir src/socompd
      $ virtualenv .
-     $ source bin/action
+     $ source bin/activate
 
 Now get the required components
 
