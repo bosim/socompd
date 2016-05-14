@@ -3,6 +3,8 @@ A minimal implementation of mpd that relay commands to Sonos. So this program ac
 
 This is work in progress
 
+![screenshot](screenshot.png)
+
 # Installing
 
 * You need https://github.com/bosim/python-mpd-server
