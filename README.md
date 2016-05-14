@@ -37,6 +37,8 @@ to be able to select the sonos device.
 * Browsing the library
 * Showing the queue and partially also modifying it
 
+Most things rely on the events system in sonos, i.e. if you change the volume it will immediately be propagated. Therefore you need an mpd client with IDLE support for optimal conditions. 
+
 # Tested client
 
 * Cantata 2.0.0, most things works, except for library, but folders can be browsed.
