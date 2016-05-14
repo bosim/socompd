@@ -5,6 +5,15 @@ from Queue import Empty
 
 from . import mpd, dev, sub_rendering, sub_transport
 
+class State(object):
+    def __init__(self):
+        self.volume = None
+        self.playlist_length = None
+        self.current_song = None
+        self.transport_state = None
+        self.current_track_duration = None
+
+event_state = State()
 
 class Idle(mpdserver.Command):
     def handle_args(self):
@@ -14,12 +23,19 @@ class Idle(mpdserver.Command):
         for i in xrange(0, 100):
             try:
                 event = sub_rendering.events.get(timeout=0.5)
+                event_state.volume = event.variables.get('volume').get('Master')
+                print "Got volume", event_state.volume
                 return "changed: mixer\n"
             except Empty:
                 pass
             
             try:
                 event = sub_transport.events.get(timeout=0.5)
+                print event.variables
+                event_state.transport_state = event.variables.get('transport_state')
+                event_state.playlist_length = event.variables.get('number_of_tracks')
+                event_state.current_song = event.variables.get('current_track')
+                event_state.current_track_duration = event.variables.get('current_track_duration')
                 return "changed: player\n"
             except Empty:
                 pass
@@ -48,23 +64,7 @@ class Status(mpdserver.Command):
     def toMpdMsg(self):
         result = ''
 
-        info = dev.get_current_transport_info()
-        track = dev.get_current_track_info()
-
-        state = info.get('current_transport_state')
-
-        if dev.play_mode == 'NORMAL':
-            result += "repeat: 0\n"
-            result += "random: 0\n"
-        elif dev.play_mode == 'REPEAT_ALL':
-            result += "repeat: 1\n"
-            result += "random: 0\n"
-        elif dev.play_mode == 'SHUFFLE':
-            result += "repeat: 1\n"
-            result += "random: 1\n"
-        elif dev.play_mode == 'SHUFFLE_NOREPEAT':
-            result += "repeat: 1\n"
-            result += "random: 1\n"
+        state = event_state.transport_state
 
 	if state == 'PAUSED_PLAYBACK':
 	    result += 'state: pause\n'
@@ -73,15 +73,15 @@ class Status(mpdserver.Command):
         elif state == 'PLAYING':
             result += 'state: play\n'
 
-	result += "song: " + str(int(track.get('playlist_position'))-1) + "\n"
-	result += "songid: " + str(int(track.get('playlist_position'))-1) + "\n"
+	result += "song: " + str(int(event_state.current_song or 0)-1)  + "\n"
+	result += "songid: " + str(int(event_state.current_song or 0)-1) + "\n"
 
-        result += 'volume: ' + str(dev.volume) + '\n'
+        result += 'volume: ' + str(event_state.volume) + '\n'
 
-	(hours, mins, seconds,) = track.get('position').split(':')
+	(hours, mins, seconds,) = "0:0:0".split(':')
         position_seconds =  int(mins) * 60 + int(seconds)
 
-	(hours, mins, seconds,) = track.get('duration').split(':')
+	(hours, mins, seconds,) = event_state.current_track_duration and event_state.current_track_duration.split(':') or (0,0,0,)
         duration_seconds =  int(mins) * 60 + int(seconds)
 
         result += 'time: ' + str(position_seconds) + ':' + str(duration_seconds) + '\n'
@@ -90,7 +90,7 @@ class Status(mpdserver.Command):
 	result += "bitrate: 128\n"
 	result += "xfade: 0\n"
 	result += "playlist: 3\n"
-	result += "playlistlength: " + str(self.playlist.length()) + "\n"
+	result += "playlistlength: " + str(event_state.playlist_length) + "\n"
 
         return result
 
