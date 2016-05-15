@@ -3,7 +3,7 @@ import time
 
 from Queue import Empty
 
-from . import mpd, dev, sub_rendering, sub_transport
+from . import mpd, dev, sub_rendering, sub_transport, sub_queue
 
 class State(object):
     def __init__(self):
@@ -23,7 +23,6 @@ class Idle(mpdserver.Command):
         for i in xrange(0, 1000):            
             try:
                 event = sub_transport.events.get(timeout=0.1)
-                print event.variables
                 event_state.transport_state = event.variables.get('transport_state')
                 event_state.playlist_length = event.variables.get('number_of_tracks')
                 event_state.current_song = event.variables.get('current_track')
@@ -35,8 +34,13 @@ class Idle(mpdserver.Command):
             try:
                 event = sub_rendering.events.get(timeout=0.1)
                 event_state.volume = event.variables.get('volume').get('Master')
-                print "Got volume", event_state.volume
                 return "changed: mixer\n"
+            except Empty:
+                pass
+
+            try:
+                event = sub_queue.events.get(timeout=0.1)
+                return "changed: playlist\n"
             except Empty:
                 pass
 
