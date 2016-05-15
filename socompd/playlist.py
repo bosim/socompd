@@ -16,7 +16,8 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
         self.playlist = []
         for i, element in enumerate(dev.get_queue(max_items=9999)):
             self.playlist.append(mpdserver.MpdPlaylistSong(
-                file=element.title.encode("utf-8"), songId=i, 
+                file=element.title.encode("utf-8"), 
+                songId=i, 
                 title=element.title.encode("utf-8"), 
                 album=hasattr(element, 'album') and element.album.encode("utf-8") or '',  
                 artist=hasattr(element, 'creator') and element.creator.encode("utf-8") or ''

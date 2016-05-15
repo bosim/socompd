@@ -8,6 +8,12 @@ class ListPlaylists(mpdserver.Command):
 
 mpd.requestHandler.RegisterCommand(ListPlaylists)
 
+class ListPlaylistInfo(mpdserver.Command):
+    formatArg=[("name", mpdserver.OptStr)]
+    pass
+
+mpd.requestHandler.RegisterCommand(ListPlaylistInfo)
+
 class Commands(mpdserver.Command):
     pass
 

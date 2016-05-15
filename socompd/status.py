@@ -32,15 +32,15 @@ class Idle(mpdserver.Command):
                 pass
 
             try:
-                event = sub_rendering.events.get(timeout=0.1)
-                event_state.volume = event.variables.get('volume').get('Master')
-                return "changed: mixer\n"
+                event = sub_queue.events.get(timeout=0.1)
+                return "changed: playlist\n"
             except Empty:
                 pass
 
             try:
-                event = sub_queue.events.get(timeout=0.1)
-                return "changed: playlist\n"
+                event = sub_rendering.events.get(timeout=0.1)
+                event_state.volume = event.variables.get('volume').get('Master')
+                return "changed: mixer\n"
             except Empty:
                 pass
 
@@ -99,3 +99,20 @@ class Status(mpdserver.Command):
         return result
 
 mpd.requestHandler.RegisterCommand(Status)
+
+
+class Stats(mpdserver.Command):
+    def toMpdMsg(self):
+        result = ""
+        result += "artists: %d\n" % len(dev.music_library.get_artists(max_items=9999))
+        result += "albums: %d\n" % len(dev.music_library.get_albums(max_items=9999))
+        result += "songs: %d\n" % len(dev.music_library.get_tracks(max_items=9999))
+        result += "uptime: 100\n"
+        result += "playtime: 100\n"
+        result += "db_playtime: -1\n"
+        result += "db_update: -1\n"
+        return result
+
+    
+
+mpd.requestHandler.RegisterCommand(Stats)
