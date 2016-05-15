@@ -1,52 +1,39 @@
 import mpdserver
 import time
 
-from Queue import Empty
+from . import mpd, dev
 
-from . import mpd, dev, sub_rendering, sub_transport, sub_queue
-
-class State(object):
-    def __init__(self):
-        self.volume = None
-        self.playlist_length = None
-        self.current_song = None
-        self.transport_state = None
-        self.current_track_duration = None
-
-event_state = State()
+from .events import event_state, event_thread
 
 class Idle(mpdserver.Command):
     def handle_args(self):
 	pass
 
     def toMpdMsg(self):
-        for i in xrange(0, 1000):            
-            try:
-                event = sub_transport.events.get(timeout=0.1)
-                event_state.transport_state = event.variables.get('transport_state')
-                event_state.playlist_length = event.variables.get('number_of_tracks')
-                event_state.current_song = event.variables.get('current_track')
-                event_state.current_track_duration = event.variables.get('current_track_duration')
-                return "changed: player\n"
-            except Empty:
-                pass
+        orig_playlist_count = event_thread.playlist_count
+        orig_transport_count = event_thread.transport_count
+        orig_rendering_count = event_thread.rendering_count
 
-            try:
-                event = sub_queue.events.get(timeout=0.1)
-                return "changed: playlist\n"
-            except Empty:
-                pass
+        result = []
 
-            try:
-                event = sub_rendering.events.get(timeout=0.1)
-                event_state.volume = event.variables.get('volume').get('Master')
-                return "changed: mixer\n"
-            except Empty:
-                pass
+        while True:
+            if event_thread.playlist_count > orig_playlist_count:
+                result.append("changed: playlist\n")
+            if event_thread.transport_count > orig_transport_count:
+                result.append("changed: player\n")
+            if event_thread.rendering_count > orig_rendering_count:
+                result.append("changed: mixer\n")
 
-        return ""
+            if len(result) > 0:
+                break
+
+            time.sleep(0.5)
+
+        return "".join(result)
+
 
 mpd.requestHandler.RegisterCommand(Idle)
+
 
 class CurrentSong(mpdserver.Command):
     def toMpdMsg(self):
@@ -95,7 +82,7 @@ class Status(mpdserver.Command):
 	result += "xfade: 0\n"
 	result += "playlist: 3\n"
 	result += "playlistlength: " + str(event_state.playlist_length) + "\n"
-
+        print "Playlist length", event_state.playlist_length
         return result
 
 mpd.requestHandler.RegisterCommand(Status)
@@ -107,7 +94,7 @@ class Stats(mpdserver.Command):
         result += "artists: %d\n" % len(dev.music_library.get_artists(max_items=9999))
         result += "albums: %d\n" % len(dev.music_library.get_albums(max_items=9999))
         result += "songs: %d\n" % len(dev.music_library.get_tracks(max_items=9999))
-        result += "uptime: 100\n"
+        result += "uptime: -1\n"
         result += "playtime: 100\n"
         result += "db_playtime: -1\n"
         result += "db_update: -1\n"

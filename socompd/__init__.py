@@ -12,11 +12,7 @@ dev = list(soco.discover())[0]
 mpd=mpdserver.MpdServerDaemon(9999)
 mpd.requestHandler.RegisterCommand(mpdserver.Outputs)
 
-from soco.services import Queue
 
-sub_rendering = dev.renderingControl.subscribe()
-sub_transport = dev.avTransport.subscribe()
-sub_queue = Queue(dev).subscribe()
 
 import playlist
 import playback
