@@ -14,22 +14,15 @@ class Idle(mpdserver.Command):
         orig_transport_count = event_thread.transport_count
         orig_rendering_count = event_thread.rendering_count
 
-        result = []
-
         while True:
             if event_thread.playlist_count > orig_playlist_count:
-                result.append("changed: playlist\n")
+                return "changed: playlist\n"
             if event_thread.transport_count > orig_transport_count:
-                result.append("changed: player\n")
+                return "changed: player\n"
             if event_thread.rendering_count > orig_rendering_count:
-                result.append("changed: mixer\n")
+                return "changed: mixer\n"
 
-            if len(result) > 0:
-                break
-
-            time.sleep(0.5)
-
-        return "".join(result)
+            time.sleep(1)
 
 
 mpd.requestHandler.RegisterCommand(Idle)

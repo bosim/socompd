@@ -33,12 +33,6 @@ class EventThread(threading.Thread):
     def run(self):
         while True:
             try:
-                event = self.sub_queue.events.get(timeout=0.3)
-                self.playlist_count = self.playlist_count + 1
-            except Empty:
-                pass
-
-            try:
                 event = self.sub_transport.events.get(timeout=0.3)
                 event_state.transport_state = event.variables.get('transport_state')
                 event_state.playlist_length = event.variables.get('number_of_tracks')
@@ -56,6 +50,11 @@ class EventThread(threading.Thread):
             except Empty:
                 pass
 
+            try:
+                event = self.sub_queue.events.get(timeout=0.3)
+                self.playlist_count = self.playlist_count + 1
+            except Empty:
+                pass
             
 event_thread = EventThread()
 event_thread.start()
