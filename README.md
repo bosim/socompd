@@ -22,7 +22,7 @@ Now get the required components
      (socompd) $ git clone https://github.com/bosim/python-mpd-server.git
      (socompd) $ cd python-mpd-server
      (socompd) $ python setup.py install
-     (socompd) $ git clone https://github.com/SoCo/SoCo.git
+     (socompd) $ git clone https://github.com/bosim/SoCo.git
      (socompd) $ cd SoCo
      (socompd) $ python setup.py install
      (socompd) $ git clone https://github.com/bosim/socompd.git
