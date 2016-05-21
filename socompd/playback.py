@@ -48,3 +48,24 @@ class SetVol(mpdserver.Command):
 
 mpd.requestHandler.RegisterCommand(SetVol)
 
+class SeekId(mpdserver.Command):
+    formatArg=[
+        ("id", mpdserver.OptStr),
+        ("pos", mpdserver.OptStr)
+    ]
+
+    def handle_args(self, id, pos):
+        seconds = int(pos)
+
+        hours = seconds / 3600
+        seconds = seconds - (hours * 3600)
+
+        minutes = seconds / 60
+        seconds = seconds - (minutes * 60)
+
+        ts = "%02d:%02d:%02d" % (hours, minutes, seconds)
+        print ts
+
+        dev.seek(ts)
+
+mpd.requestHandler.RegisterCommand(SeekId)
