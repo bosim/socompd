@@ -14,13 +14,22 @@ class Idle(mpdserver.Command):
         orig_transport_count = event_thread.transport_count
         orig_rendering_count = event_thread.rendering_count
 
+        result = ""
+
         while True:
+            event_thread.lock.acquire()
+
             if event_thread.playlist_count > orig_playlist_count:
-                return "changed: playlist\n"
+                result += "changed: playlist\n"
             if event_thread.transport_count > orig_transport_count:
-                return "changed: player\n"
+                result += "changed: player\n"
             if event_thread.rendering_count > orig_rendering_count:
-                return "changed: mixer\n"
+                result +="changed: mixer\n"
+
+            event_thread.lock.release()
+
+            if len(result) > 0:
+                return result
 
             time.sleep(1)
 
@@ -33,6 +42,7 @@ class CurrentSong(mpdserver.Command):
         current_song = dev.get_current_track_info()
 
         result = ""
+        result = result + "file: " + current_song.get('uri').encode("utf-8") + '\n'
 	result = result + "Id: " + str(int(current_song.get('playlist_position'))-1) + '\n'
 	result = result + "Position: " + str(int(current_song.get('playlist_position'))-1) + '\n'
         result = result + "Artist: " + current_song.get('artist').encode("utf-8") + '\n'
