@@ -67,15 +67,17 @@ class Status(mpdserver.Command):
         elif state == 'PLAYING':
             result += 'state: play\n'
 
-	result += "song: " + str(int(event_state.current_song or 0)-1)  + "\n"
-	result += "songid: " + str(int(event_state.current_song or 0)-1) + "\n"
-
         result += 'volume: ' + str(event_state.volume) + '\n'
 
-	(hours, mins, seconds,) = "0:0:0".split(':')
+        track = dev.get_current_track_info()
+
+	result += "song: " + str(int(track.get('playlist_position'))-1) + "\n"
+	result += "songid: " + str(int(track.get('playlist_position'))-1) + "\n"
+
+	(hours, mins, seconds,) = track.get('position').split(':')
         position_seconds =  int(mins) * 60 + int(seconds)
 
-	(hours, mins, seconds,) = event_state.current_track_duration and event_state.current_track_duration.split(':') or (0,0,0,)
+	(hours, mins, seconds,) = track.get('duration').split(':')
         duration_seconds =  int(mins) * 60 + int(seconds)
 
         result += 'time: ' + str(position_seconds) + ':' + str(duration_seconds) + '\n'
@@ -83,9 +85,9 @@ class Status(mpdserver.Command):
 
 	result += "bitrate: 128\n"
 	result += "xfade: 0\n"
-	result += "playlist: 3\n"
-	result += "playlistlength: " + str(event_state.playlist_length) + "\n"
-        print "Playlist length", event_state.playlist_length
+	result += "playlist: " + str(self.playlist.version()) + "\n"
+	result += "playlistlength: " + str(self.playlist.length()) + "\n"
+
         return result
 
 mpd.requestHandler.RegisterCommand(Status)
