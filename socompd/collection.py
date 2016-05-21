@@ -12,13 +12,21 @@ class LsInfo(mpdserver.Command):
         result = ""
         if self.args.get('directory'):
             for album in dev.get_music_library_information('albums'):
-                if album.title.encode("utf-8") == self.args.get('directory'):
+                argument = self.args.get('directory')
+                if argument.endswith(album.title.encode("utf-8")):
                     for track in dev.browse(album):
                         result = result + "file: " + urllib.unquote(track.resources[0].uri).encode("utf-8") + "\n"
+                        result = result + "Title: " + track.title.encode("utf-8") + "\n"
+                        result = result + "Artist: " + track.creator.encode("utf-8") + "\n"
+                        result = result + "Album : " + track.album.encode("utf-8") + "\n"
             
         else:
+            dirs = []
             for album in dev.get_music_library_information('albums'):
-                result = result + "directory: " + album.title.encode("utf-8") + "\n"
+                dirs.append(album.creator.encode("utf-8") + " - " + album.title.encode("utf-8"))
+            dirs.sort()
+            
+            result = '\n'.join(['directory: ' + dirname for dirname in dirs])
 
         return result
 

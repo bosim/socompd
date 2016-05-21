@@ -31,7 +31,7 @@ class Idle(mpdserver.Command):
             if len(result) > 0:
                 return result
 
-            time.sleep(1)
+            time.sleep(0.1)
 
 
 mpd.requestHandler.RegisterCommand(Idle)
