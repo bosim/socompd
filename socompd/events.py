@@ -15,6 +15,8 @@ class State(object):
         self.transport_state = None
         self.current_track_duration = None
 
+        self.playlist_version = 0
+
 event_state = State()
 
 
@@ -63,6 +65,8 @@ class EventThread(threading.Thread):
                 self.lock.acquire()
                 self.playlist_count = self.playlist_count + 1
                 self.lock.release()
+
+                event_state.playlist_version = event_state.playlist_version  + 1
             except Empty:
                 pass
             

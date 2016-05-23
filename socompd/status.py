@@ -11,7 +11,7 @@ class Idle(mpdserver.Command):
 	pass
 
     def toMpdMsg(self):
-        self.socket._sock.settimeout(0.5)
+        self.socket._sock.settimeout(0.1)
 
         while True:
             event_thread.lock.acquire()
