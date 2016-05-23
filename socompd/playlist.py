@@ -5,7 +5,11 @@ from . import mpd, dev
 
 
 class MpdPlaylist(mpdserver.MpdPlaylist):
-    playlist=[]
+    _playlist=[]
+    _version=0
+    
+    def version(self):
+        return self._version
 
     def songIdToPosition(self,i):
         for e in self.playlist:
@@ -14,7 +18,8 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
 
     def handlePlaylist(self):
         print "Updated playlist"
-        self.playlist = []
+        self._version = self._version + 1
+        self._playlist = []
 
         for i, element in enumerate(dev.get_queue(max_items=9999)):
             song = mpdserver.MpdPlaylistSong(
@@ -24,9 +29,9 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
                 album=hasattr(element, 'album') and element.album.encode("utf-8") or '',  
                 artist=hasattr(element, 'creator') and element.creator.encode("utf-8") or ''
             )
-            self.playlist.append(song)
+            self._playlist.append(song)
 
-        return self.playlist
+        return self._playlist
 
     def delete(self, songid):
         dev.remove_from_queue(songid)

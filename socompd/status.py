@@ -1,5 +1,6 @@
 import mpdserver
 import time
+import socket
 
 from . import mpd, dev
 
@@ -10,28 +11,68 @@ class Idle(mpdserver.Command):
 	pass
 
     def toMpdMsg(self):
-        orig_playlist_count = event_thread.playlist_count
-        orig_transport_count = event_thread.transport_count
-        orig_rendering_count = event_thread.rendering_count
-
-        result = ""
+        self.socket._sock.settimeout(0.5)
 
         while True:
             event_thread.lock.acquire()
-
-            if event_thread.playlist_count > orig_playlist_count:
-                result += "changed: playlist\n"
-            if event_thread.transport_count > orig_transport_count:
-                result += "changed: player\n"
-            if event_thread.rendering_count > orig_rendering_count:
-                result +="changed: mixer\n"
-
+            orig_playlist_count = event_thread.playlist_count
+            orig_transport_count = event_thread.transport_count
+            orig_rendering_count = event_thread.rendering_count
             event_thread.lock.release()
 
-            if len(result) > 0:
-                return result
+            buf = None
 
-            time.sleep(0.1)
+            try:
+                buf = self.socket.readline()
+            except socket.timeout:
+                buf = ""
+            except socket.error:
+                print "Got socket error"
+                return ""
+
+            if buf == None:
+                return ""
+
+            buf = buf.replace('\r', '').replace('\n', '')
+
+            if buf and buf.lower() == "noidle":
+                self.socket._sock.settimeout(None)
+                print "Got noidle"
+                return ""
+
+            event_thread.lock.acquire()
+            new_playlist_count = event_thread.playlist_count
+            new_transport_count = event_thread.transport_count
+            new_rendering_count = event_thread.rendering_count
+            event_thread.lock.release()            
+
+            if new_playlist_count > orig_playlist_count:
+                print "Playlist change detected"
+                try:
+                    self.socket.write("changed: playlist\nOK\n")
+                    self.socket.flush()
+                except socket.error:
+                    print "Socket error"
+                    return ""
+
+            if new_transport_count > orig_transport_count:
+                print "Transport change detected"
+                try:
+                    self.socket.write("changed: player\nOK\n")
+                    self.socket.flush()
+                except socket.error:
+                    print "Socket error"
+                    return ""
+
+            if new_rendering_count > orig_rendering_count:
+                print "Rendering change detected"
+                try:
+                    self.socket.write("changed: mixer\nOK\n")
+                    self.socket.flush()
+                except socket.error:
+                    print "Socket error"
+                    return ""
+
 
 
 mpd.requestHandler.RegisterCommand(Idle)

@@ -36,6 +36,7 @@ class EventThread(threading.Thread):
         while True:
             try:
                 event = self.sub_transport.events.get(timeout=0.1)
+
                 event_state.transport_state = event.variables.get('transport_state')
                 event_state.playlist_length = event.variables.get('number_of_tracks')
                 event_state.current_song = event.variables.get('current_track')

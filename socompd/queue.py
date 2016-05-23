@@ -15,6 +15,11 @@ class Add(mpdserver.Command):
 
 mpd.requestHandler.RegisterCommand(Add)
 
+class AddId(Add):
+    pass
+
+mpd.requestHandler.RegisterCommand(AddId)
+
 class Clear(mpdserver.Command):
     def handle_args(self):
         dev.clear_queue()
