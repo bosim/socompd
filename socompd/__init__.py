@@ -1,23 +1,23 @@
-import mpdserver
 import soco
 import urllib
 import time
 
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 dev = list(soco.discover())[0]
+funcs = {}
 
-mpd=mpdserver.MpdServerDaemon(9999)
-mpd.requestHandler.RegisterCommand(mpdserver.Outputs)
+def mpdCommand(name):
+    def decorator(func):
+        funcs[name] = func
+        return func
 
+    return decorator
 
+import socompd.server
+import socompd.playlist
+import socompd.playback
+import socompd.queue
+import socompd.status
+import socompd.collection
+import socompd.stubs
 
-import playlist
-import playback
-import queue
-import status
-import collection
-import stubs
 

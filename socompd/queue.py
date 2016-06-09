@@ -1,9 +1,7 @@
-import mpdserver
+from . import dev
 
-from . import mpd, dev
-
-class Add(mpdserver.Command):
-    formatArg=[("uri", mpdserver.OptStr)]
+class Add(object):
+    #formatArg=[("uri", mpdserver.OptStr)]
 
     def handle_args(self, uri):
         if uri.startswith('http://'):
@@ -13,16 +11,16 @@ class Add(mpdserver.Command):
 
         dev.add_uri_to_queue(uri)
 
-mpd.requestHandler.RegisterCommand(Add)
+#mpd.requestHandler.RegisterCommand(Add)
 
 class AddId(Add):
     pass
 
-mpd.requestHandler.RegisterCommand(AddId)
+#mpd.requestHandler.RegisterCommand(AddId)
 
-class Clear(mpdserver.Command):
+class Clear(object):
     def handle_args(self):
         dev.clear_queue()
 
-mpd.requestHandler.RegisterCommand(Clear)
+#mpd.requestHandler.RegisterCommand(Clear)
 

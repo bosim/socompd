@@ -1,12 +1,10 @@
-import mpdserver
-
 import urllib
 
-from . import mpd, dev
+from . import dev
 
 
-class LsInfo(mpdserver.Command):
-    formatArg=[("directory",mpdserver.OptStr)]
+class LsInfo(object):
+    #formatArg=[("directory",mpdserver.OptStr)]
 
     def toMpdMsg(self):
         result = ""
@@ -30,4 +28,4 @@ class LsInfo(mpdserver.Command):
 
         return result
 
-mpd.requestHandler.RegisterCommand(LsInfo)
+#mpd.requestHandler.RegisterCommand(LsInfo)

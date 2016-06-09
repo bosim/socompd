@@ -1,6 +1,6 @@
 import threading
 
-from Queue import Empty
+from queue import Empty
 
 from soco.services import Queue
 

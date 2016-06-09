@@ -1,71 +1,45 @@
-import mpdserver
+from . import dev, mpdCommand
 
-from . import mpd, dev
+@mpdCommand("playid")
+def playId(songId):
+    dev.play_from_queue(songId)
 
-class PlayId(mpdserver.PlayId):
-    def handle_args(self,songId):
-        dev.play_from_queue(songId)
+@mpdCommand("play")
+def play(aux=None):
+    dev.play()
 
-mpd.requestHandler.RegisterCommand(PlayId)
+@mpdCommand("next")
+def next():
+    dev.next()
 
-class Play(mpdserver.Command):
-    formatArg=[("aux", mpdserver.OptStr)]
-    def handle_args(self, aux=None):
+@mpdCommand("previous")
+def previous():
+    dev.previous()
+
+@mpdCommand("pause")
+def pause(aux=None):
+    info = dev.get_current_transport_info()
+
+    if info.get('current_transport_state') == "PAUSED_PLAYBACK":
         dev.play()
+    else:
+        dev.pause()
 
-mpd.requestHandler.RegisterCommand(Play)
+@mpdCommand("setvol")
+def setVol(self, vol):
+    dev.volume = int(vol)
 
-class Next(mpdserver.Command):
-    def handle_args(self):
-        dev.next()
+@mpdCommand("seekid")
+def seekId(self, id, pos):
+    seconds = int(pos)
 
-mpd.requestHandler.RegisterCommand(Next)
-
-class Previous(mpdserver.Command):
-    def handle_args(self):
-        dev.previous()
-
-mpd.requestHandler.RegisterCommand(Previous)
-
-class Pause(mpdserver.Command):
-    formatArg=[("aux", mpdserver.OptStr)]
-    def handle_args(self, **kwargs):
-        info = dev.get_current_transport_info()
-
-        if info.get('current_transport_state') == "PAUSED_PLAYBACK":
-            dev.play()
-        else:
-            dev.pause()
-
-
-mpd.requestHandler.RegisterCommand(Pause)
-
-class SetVol(mpdserver.Command):
-    formatArg=[("vol", mpdserver.OptStr)]
+    hours = seconds / 3600
+    seconds = seconds - (hours * 3600)
     
-    def handle_args(self, vol):
-        dev.volume = int(vol)
+    minutes = seconds / 60
+    seconds = seconds - (minutes * 60)
 
-mpd.requestHandler.RegisterCommand(SetVol)
+    ts = "%02d:%02d:%02d" % (hours, minutes, seconds)
 
-class SeekId(mpdserver.Command):
-    formatArg=[
-        ("id", mpdserver.OptStr),
-        ("pos", mpdserver.OptStr)
-    ]
+    dev.seek(ts)
 
-    def handle_args(self, id, pos):
-        seconds = int(pos)
-
-        hours = seconds / 3600
-        seconds = seconds - (hours * 3600)
-
-        minutes = seconds / 60
-        seconds = seconds - (minutes * 60)
-
-        ts = "%02d:%02d:%02d" % (hours, minutes, seconds)
-        print ts
-
-        dev.seek(ts)
-
-mpd.requestHandler.RegisterCommand(SeekId)

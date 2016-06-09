@@ -1,11 +1,10 @@
 import time
-import mpdserver
 
-from . import mpd, dev
+from . import dev
 
-from events import event_state
+from socompd.events import event_state
 
-class MpdPlaylist(mpdserver.MpdPlaylist):
+class MpdPlaylist(object):
     playlist=[]
     current_version=0
     version_counter=0
@@ -23,7 +22,6 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
         if event_state.playlist_version == self.current_version:
             return self.playlist
 
-        print "Updated playlist"
         self.playlist = []
 
         for i, element in enumerate(dev.get_queue(max_items=9999)):
@@ -43,4 +41,4 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
     def delete(self, songid):
         dev.remove_from_queue(songid)
 
-mpd.requestHandler.Playlist=MpdPlaylist
+#mpd.requestHandler.Playlist=MpdPlaylist
