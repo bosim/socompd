@@ -26,11 +26,11 @@ def pause(aux=None):
         dev.pause()
 
 @mpdCommand("setvol")
-def setVol(self, vol):
+def setVol(vol):
     dev.volume = int(vol)
 
 @mpdCommand("seekid")
-def seekId(self, id, pos):
+def seekId(id, pos):
     seconds = int(pos)
 
     hours = seconds / 3600
