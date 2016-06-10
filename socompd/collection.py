@@ -1,31 +1,34 @@
 import urllib
+from soco.music_library import MusicLibrary
 
-from . import dev
+from . import dev, mpdCommand
 
 
-class LsInfo(object):
-    #formatArg=[("directory",mpdserver.OptStr)]
-
-    def toMpdMsg(self):
-        result = ""
-        if self.args.get('directory', '') and self.args.get('directory', '') != '/':
-            for album in dev.get_music_library_information('albums'):
-                argument = self.args.get('directory')
-                if argument.endswith(album.title.encode("utf-8")):
-                    for track in dev.browse(album):
-                        result = result + "file: " + urllib.unquote(track.resources[0].uri).encode("utf-8") + "\n"
-                        result = result + "Title: " + track.title.encode("utf-8") + "\n"
-                        result = result + "Artist: " + track.creator.encode("utf-8") + "\n"
-                        result = result + "Album : " + track.album.encode("utf-8") + "\n"
+@mpdCommand("lsinfo")
+def lsInfo(directory=None):
+    music_library = MusicLibrary(dev)
+    result = ""
+    if directory and directory != "/":
+        for album in music_library.get_music_library_information('albums'):
+            if directory.endswith(album.title):
+                for track in music_library.browse(album):
+                    result += "file: " + urllib.parse.unquote(
+                        track.resources[0].uri
+                    ) + "\n"
+                    result += "Title: " + track.title + "\n"
+                    result += "Artist: " + track.creator + "\n"
+                    result += "Album : " + track.album + "\n"
             
-        else:
-            dirs = []
-            for album in dev.get_music_library_information('albums'):
-                dirs.append(album.creator.encode("utf-8") + " - " + album.title.encode("utf-8"))
-            dirs.sort()
-            
-            result = '\n'.join(['directory: ' + dirname for dirname in dirs]) + "\n"
+    else:
+        dirs = []
+        for album in dev.get_music_library_information('albums'):
+            dirs.append(album.creator + " - " + album.title)
 
-        return result
+        dirs.sort()            
 
-#mpd.requestHandler.RegisterCommand(LsInfo)
+        dirs_str = ['directory: ' + dirname for dirname in dirs]
+        result = '\n'.join(dirs_str) + "\n"
+
+    return result
+
+

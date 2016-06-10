@@ -1,28 +1,22 @@
-from . import dev
+from . import mpdCommand
 
 
-class ListPlaylists(object):
-    pass
+@mpdCommand("listplaylists")
+def listPlaylists():
+    return None
 
-#mpd.requestHandler.RegisterCommand(ListPlaylists)
+@mpdCommand("listplaylistinfo")
+def listPlaylistInfo():
+    return None
 
-class ListPlaylistInfo(object):
-    #formatArg=[("name", mpdserver.OptStr)]
-    pass
+@mpdCommand("commands")
+def commands():
+    return None
 
-#mpd.requestHandler.RegisterCommand(ListPlaylistInfo)
+@mpdCommand("tagtypes")
+def tagtypes():
+    return None
 
-class Commands(object):
-    pass
-
-#mpd.requestHandler.RegisterCommand(Commands)
-
-class TagTypes(object):
-    pass
-
-#mpd.requestHandler.RegisterCommand(TagTypes)
-
-class UrlHandlers(object):
-    pass
-
-#mpd.requestHandler.RegisterCommand(UrlHandlers)
+@mpdCommand("urlhandlers")
+def urlHandlers():
+    return None

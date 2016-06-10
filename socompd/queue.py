@@ -1,26 +1,19 @@
-from . import dev
+from . import dev, mpdCommand
 
-class Add(object):
-    #formatArg=[("uri", mpdserver.OptStr)]
+@mpdCommand("add")
+def add(uri):
+    if uri.startswith('http://'):
+        uri = uri.replace('http://', 'x-rincon-mp3radio://')
+    if uri.find('#') >= 0:
+        uri = uri[:uri.find('#')]
 
-    def handle_args(self, uri):
-        if uri.startswith('http://'):
-            uri = uri.replace('http://', 'x-rincon-mp3radio://')
-        if uri.find('#') >= 0:
-            uri = uri[:uri.find('#')]
+    dev.add_uri_to_queue(uri)
 
-        dev.add_uri_to_queue(uri)
+@mpdCommand("addid")
+def addId(uri):
+    return add(uri)
 
-#mpd.requestHandler.RegisterCommand(Add)
-
-class AddId(Add):
-    pass
-
-#mpd.requestHandler.RegisterCommand(AddId)
-
-class Clear(object):
-    def handle_args(self):
-        dev.clear_queue()
-
-#mpd.requestHandler.RegisterCommand(Clear)
+@mpdCommand("clear")
+def clear():
+    dev.clear_queue()
 
