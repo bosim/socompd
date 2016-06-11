@@ -1,7 +1,6 @@
 import time
 
-from . import dev, mpdCommand
-
+from socompd import dev, mpdCommand
 from socompd.events import event_state
 from socompd.utils import songToText
 
@@ -14,6 +13,8 @@ class playlistStore(object):
         if self.playlist and self.version == event_state.playlist_version:
             return self.playlist
         else:
+            self.playlist = []
+
             for i, element in enumerate(dev.get_queue(max_items=9999)):
                 song = {
                     'file': element.title, 

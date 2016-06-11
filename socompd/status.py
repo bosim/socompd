@@ -101,8 +101,8 @@ def status():
 
     result += "bitrate: 128\n"
     result += "xfade: 0\n"
-    result += "playlist: " + str(playlist_store.version) + "\n"
     result += "playlistlength: " + str(len(playlist_store.getCurrentPlaylist())) + "\n"
+    result += "playlist: " + str(playlist_store.version) + "\n"
 
     return result
 

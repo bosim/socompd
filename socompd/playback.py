@@ -34,14 +34,13 @@ def setVol(vol):
 def seekId(id, pos):
     seconds = int(pos)
 
-    hours = seconds / 3600
+    hours = seconds // 3600
     seconds = seconds - (hours * 3600)
     
-    minutes = seconds / 60
+    minutes = seconds // 60
     seconds = seconds - (minutes * 60)
 
     ts = "%02d:%02d:%02d" % (hours, minutes, seconds)
-
     dev.seek(ts)
 
 @mpdCommand("outputs")

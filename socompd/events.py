@@ -14,7 +14,6 @@ class State(object):
         self.current_song = None
         self.transport_state = None
         self.current_track_duration = None
-
         self.playlist_version = 0
 
 event_state = State()
