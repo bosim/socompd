@@ -7,9 +7,9 @@ This is work in progress
 
 # Installing
 
-* You need https://github.com/bosim/python-mpd-server
-* You need https://github.com/SoCo/SoCo
+* You need https://github.com/bosim/SoCo
 * A mpd client (ideally Cantata)
+* Python 3.4+
 
 Create a virtualenv
 
@@ -19,9 +19,6 @@ Create a virtualenv
 
 Now get the required components
 
-     (socompd) $ git clone https://github.com/bosim/python-mpd-server.git
-     (socompd) $ cd python-mpd-server
-     (socompd) $ python setup.py install
      (socompd) $ git clone https://github.com/bosim/SoCo.git
      (socompd) $ cd SoCo
      (socompd) $ python setup.py install
