@@ -1,11 +1,10 @@
 import socketserver
+
 import shlex
 
-from . import funcs
+from . import funcs, idle_command
 
 class MpdHandler(socketserver.BaseRequestHandler):
-    allow_reuse_address = True
-
     def handle(self):
         welcome=u"OK MPD 0.16.0\n"
         self.request.sendall(bytes(welcome, "utf-8"))
@@ -28,6 +27,15 @@ class MpdHandler(socketserver.BaseRequestHandler):
 
                 if cmd.lower() == "quit":
                     return
+
+                if cmd.lower() == "idle":
+                    import pdb; pdb.set_trace()
+                    self.request.settimeout(0.1)
+
+                    idle_command(self.request)
+                    self.request.sendall(bytes("OK\n", "utf-8"))
+
+                    self.request.settimeout(None)
 
                 cmd_found = False
 

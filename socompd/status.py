@@ -1,69 +1,62 @@
 import time
 import socket
 
-from . import dev, mpdCommand
+from . import dev, mpdCommand, mpdIdleCommand
 
 from .events import event_state, event_thread
 
-class Idle(object):
-    def toMpdMsg(self):
-        self.socket._sock.settimeout(0.1)
+@mpdIdleCommand()
+def Idle(s):
+    while True:
+        event_thread.lock.acquire()
+        orig_playlist_count = event_thread.playlist_count
+        orig_transport_count = event_thread.transport_count
+        orig_rendering_count = event_thread.rendering_count
+        event_thread.lock.release()
 
-        while True:
-            event_thread.lock.acquire()
-            orig_playlist_count = event_thread.playlist_count
-            orig_transport_count = event_thread.transport_count
-            orig_rendering_count = event_thread.rendering_count
-            event_thread.lock.release()
+        buf = None
 
-            buf = None
+        try:
+            buf = s.readline()
+        except socket.timeout:
+            buf = ""
+        except socket.error:
+            return ""
 
+        if buf == None:
+            return ""
+
+        buf = buf.decode("utf-8").replace('\r', '').replace('\n', '')
+
+        if buf and buf.lower() == "noidle":
+            return ""
+
+        event_thread.lock.acquire()
+        new_playlist_count = event_thread.playlist_count
+        new_transport_count = event_thread.transport_count
+        new_rendering_count = event_thread.rendering_count
+        event_thread.lock.release()            
+
+        if new_playlist_count > orig_playlist_count:
             try:
-                buf = self.socket.readline()
-            except socket.timeout:
-                buf = ""
+                s.write("changed: playlist\nOK\n")
+                s.flush()
             except socket.error:
                 return ""
 
-            if buf == None:
+        if new_transport_count > orig_transport_count:
+            try:
+                s.write("changed: player\nOK\n")
+                s.flush()
+            except socket.error:
                 return ""
 
-            buf = buf.replace('\r', '').replace('\n', '')
-
-            if buf and buf.lower() == "noidle":
-                self.socket._sock.settimeout(None)
+        if new_rendering_count > orig_rendering_count:
+            try:
+                s.write("changed: mixer\nOK\n")
+                s.flush()
+            except socket.error:
                 return ""
-
-            event_thread.lock.acquire()
-            new_playlist_count = event_thread.playlist_count
-            new_transport_count = event_thread.transport_count
-            new_rendering_count = event_thread.rendering_count
-            event_thread.lock.release()            
-
-            if new_playlist_count > orig_playlist_count:
-                try:
-                    self.socket.write("changed: playlist\nOK\n")
-                    self.socket.flush()
-                except socket.error:
-                    return ""
-
-            if new_transport_count > orig_transport_count:
-                try:
-                    self.socket.write("changed: player\nOK\n")
-                    self.socket.flush()
-                except socket.error:
-                    return ""
-
-            if new_rendering_count > orig_rendering_count:
-                try:
-                    self.socket.write("changed: mixer\nOK\n")
-                    self.socket.flush()
-                except socket.error:
-                    return ""
-
-
-
-#mpd.requestHandler.RegisterCommand(Idle)
 
 @mpdCommand("currentsong")
 def currentSong():
