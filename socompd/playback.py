@@ -43,3 +43,11 @@ def seekId(id, pos):
 
     dev.seek(ts)
 
+@mpdCommand("outputs")
+def outputs():
+    result = ""
+    result += "outputid: 0\n"
+    result += "outputname: test\n"
+    result += "outputenabled: 1\n"
+    
+    return result
