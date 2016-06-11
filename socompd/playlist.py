@@ -44,4 +44,13 @@ def playlistInfo(position=None):
             result += songToText(song)
         return result
 
+@mpdCommand("delete")
+def delete(id):
+    pos = int(id)
+    dev.remove_from_queue(pos)
+
+@mpdCommand("deleteId")
+def deleteId(id):
+    pos = int(id)
+    dev.remove_from_queue(pos)
 
