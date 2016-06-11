@@ -1,9 +1,9 @@
 import time
 import socket
 
-from . import dev, mpdCommand, mpdIdleCommand
-
-from .events import event_state, event_thread
+from socompd import dev, mpdCommand, mpdIdleCommand
+from socompd.events import event_state, event_thread
+from socompd.playlist import playlist_store
 
 @mpdIdleCommand()
 def Idle(s):
@@ -101,8 +101,8 @@ def status():
 
     result += "bitrate: 128\n"
     result += "xfade: 0\n"
-    #result += "playlist: " + str(self.playlist.version()) + "\n"
-    #result += "playlistlength: " + str(self.playlist.length()) + "\n"
+    result += "playlist: " + str(playlist_store.version) + "\n"
+    result += "playlistlength: " + str(len(playlist_store.getCurrentPlaylist())) + "\n"
 
     return result
 

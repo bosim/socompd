@@ -2,7 +2,8 @@ from . import dev, mpdCommand
 
 @mpdCommand("playid")
 def playId(songId):
-    dev.play_from_queue(songId)
+    id = int(songId)
+    dev.play_from_queue(id)
 
 @mpdCommand("play")
 def play(aux=None):
