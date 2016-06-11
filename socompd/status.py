@@ -18,18 +18,16 @@ def Idle(s):
 
         try:
             buf = s.recv(1024)
+
+            buf = buf.decode("utf-8").replace('\r', '').replace('\n', '')
+
+            if buf and buf.lower() == "noidle":
+                return
+
         except socket.timeout:
             buf = bytes()
         except socket.error:
-            return bytes()
-
-        if buf == None:
-            return ""
-
-        buf = buf.decode("utf-8").replace('\r', '').replace('\n', '')
-
-        if buf and buf.lower() == "noidle":
-            return ""
+            return
 
         event_thread.lock.acquire()
         new_playlist_count = event_thread.playlist_count
@@ -41,19 +39,19 @@ def Idle(s):
             try:
                 s.sendall(bytes("changed: playlist\nOK\n", "utf-8"))
             except socket.error:
-                return ""
+                return
 
         if new_transport_count > orig_transport_count:
             try:
                 s.sendall(bytes("changed: player\nOK\n", "utf-8"))
             except socket.error:
-                return ""
+                return
 
         if new_rendering_count > orig_rendering_count:
             try:
                 s.sendall(bytes("changed: mixer\nOK\n", "utf-8"))
             except socket.error:
-                return ""
+                return
 
 @mpdCommand("currentsong")
 def currentSong():
