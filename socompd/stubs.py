@@ -6,7 +6,7 @@ def listPlaylists():
     return None
 
 @mpdCommand("listplaylistinfo")
-def listPlaylistInfo():
+def listPlaylistInfo(aux=None):
     return None
 
 @mpdCommand("commands")

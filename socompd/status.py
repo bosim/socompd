@@ -70,13 +70,13 @@ def currentSong():
     current_song = dev.get_current_track_info()
 
     result = ""
-    result = result + "file: " + current_song.get('uri').encode("utf-8") + '\n'
+    result = result + "file: " + current_song.get('uri') + '\n'
     result = result + "Id: " + str(int(current_song.get('playlist_position'))-1) + '\n'
     result = result + "Position: " + str(int(current_song.get('playlist_position'))-1) + '\n'
-    result = result + "Artist: " + current_song.get('artist').encode("utf-8") + '\n'
-    result = result + "Album: " + current_song.get('album').encode("utf-8") + '\n'
-    result = result + "Title: " + current_song.get('title').encode("utf-8") + '\n'
-    result = result + "Name: " + current_song.get('title').encode("utf-8") + '\n'
+    result = result + "Artist: " + current_song.get('artist') + '\n'
+    result = result + "Album: " + current_song.get('album') + '\n'
+    result = result + "Title: " + current_song.get('title') + '\n'
+    result = result + "Name: " + current_song.get('title') + '\n'
         
     return result
 

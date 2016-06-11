@@ -7,11 +7,15 @@ class MpdHandler(socketserver.BaseRequestHandler):
     allow_reuse_address = True
 
     def handle(self):
+        welcome=u"OK MPD 0.16.0\n"
+        self.request.sendall(bytes(welcome, "utf-8"))
 
         while True:
             data = self.request.recv(1024)
             if not data:
                 return
+
+            print("Read data %s" % data)
 
             data = data.decode("utf-8").strip()
             data = data.replace("\r", "").replace("\n", "")
@@ -40,4 +44,5 @@ class MpdHandler(socketserver.BaseRequestHandler):
                 if not cmd_found:
                     error_str = "ACK Command not found %s\n" % cmd
                     self.request.sendall(bytes(error_str, "utf-8"))
+                    print("Unknown command %s\n" % cmd)
                     
