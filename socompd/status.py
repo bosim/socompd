@@ -19,6 +19,9 @@ def Idle(s):
         try:
             buf = s.recv(1024)
 
+            if not buf:
+                return
+
             buf = buf.decode("utf-8").replace('\r', '').replace('\n', '')
 
             if buf and buf.lower() == "noidle":

@@ -1,3 +1,4 @@
+import socket
 import socketserver
 
 import shlex
@@ -27,7 +28,11 @@ class MpdHandler(socketserver.BaseRequestHandler):
         self.request.sendall(bytes(welcome, "utf-8"))
 
         while True:
-            data = self.request.recv(4096)
+            try:
+                data = self.request.recv(4096)
+            except socket.error:
+                return
+
             if not data:
                 return
 
