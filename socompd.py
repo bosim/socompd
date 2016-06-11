@@ -2,6 +2,7 @@
 
 import socompd
 import socketserver
+socketserver.TCPServer.allow_reuse_address = True
 
 class ThreadedTCPServer(
         socketserver.ThreadingMixIn, socketserver.TCPServer

@@ -17,11 +17,11 @@ def Idle(s):
         buf = None
 
         try:
-            buf = s.readline()
+            buf = s.recv(1024)
         except socket.timeout:
-            buf = ""
+            buf = bytes()
         except socket.error:
-            return ""
+            return bytes()
 
         if buf == None:
             return ""
@@ -39,22 +39,19 @@ def Idle(s):
 
         if new_playlist_count > orig_playlist_count:
             try:
-                s.write("changed: playlist\nOK\n")
-                s.flush()
+                s.sendall(bytes("changed: playlist\nOK\n", "utf-8"))
             except socket.error:
                 return ""
 
         if new_transport_count > orig_transport_count:
             try:
-                s.write("changed: player\nOK\n")
-                s.flush()
+                s.sendall(bytes("changed: player\nOK\n", "utf-8"))
             except socket.error:
                 return ""
 
         if new_rendering_count > orig_rendering_count:
             try:
-                s.write("changed: mixer\nOK\n")
-                s.flush()
+                s.sendall(bytes("changed: mixer\nOK\n", "utf-8"))
             except socket.error:
                 return ""
 

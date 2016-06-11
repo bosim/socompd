@@ -5,7 +5,7 @@ import time
 dev = list(soco.discover())[0]
 
 funcs = {}
-idle_command = None
+idle_command = []
 
 def mpdCommand(name):
     def decorator(func):
@@ -16,7 +16,7 @@ def mpdCommand(name):
 
 def mpdIdleCommand():
     def decorator(func):
-        idle_command = func
+        idle_command.append(func)
         return func
 
     return decorator

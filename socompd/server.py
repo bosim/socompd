@@ -28,29 +28,29 @@ class MpdHandler(socketserver.BaseRequestHandler):
                 if cmd.lower() == "quit":
                     return
 
-                if cmd.lower() == "idle":
-                    import pdb; pdb.set_trace()
+                elif cmd.lower() == "idle":
                     self.request.settimeout(0.1)
 
-                    idle_command(self.request)
+                    idle_command[0](self.request)
                     self.request.sendall(bytes("OK\n", "utf-8"))
 
                     self.request.settimeout(None)
 
-                cmd_found = False
+                else:
+                    cmd_found = False
 
-                for (name, func,) in funcs.items():
-                    if name.lower() == cmd.lower():
-                        result = func(*args)
-                        if result:
-                            self.request.sendall(bytes(result, "utf-8"))
+                    for (name, func,) in funcs.items():
+                        if name.lower() == cmd.lower():
+                            result = func(*args)
+                            if result:
+                                self.request.sendall(bytes(result, "utf-8"))
 
-                        self.request.sendall(bytes("OK\n", "utf-8"))
+                            self.request.sendall(bytes("OK\n", "utf-8"))
+                                
+                            cmd_found = True
 
-                        cmd_found = True
-
-                if not cmd_found:
-                    error_str = "ACK Command not found %s\n" % cmd
-                    self.request.sendall(bytes(error_str, "utf-8"))
-                    print("Unknown command %s\n" % cmd)
+                    if not cmd_found:
+                        error_str = "ACK Command not found %s\n" % cmd
+                        self.request.sendall(bytes(error_str, "utf-8"))
+                        print("Unknown command %s\n" % cmd)
                     
