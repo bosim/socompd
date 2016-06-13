@@ -24,7 +24,6 @@ def mpdIdleCommand():
 import socompd.server
 import socompd.playlist
 import socompd.playback
-import socompd.queue
 import socompd.status
 import socompd.collection
 import socompd.stubs
