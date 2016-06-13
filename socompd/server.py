@@ -53,7 +53,7 @@ class MpdHandler(socketserver.StreamRequestHandler):
                 return
 
             elif cmd.lower() == "idle":
-                self.request.settimeout(0.3)
+                self.request.settimeout(0.2)
                 
                 idle_command[0](self.request)
                 self.request.sendall(bytes("OK\n", "utf-8"))

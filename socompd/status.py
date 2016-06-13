@@ -15,7 +15,7 @@ def Idle(s):
         buf = None
 
         try:
-            buf = s.recv(1024)
+            buf = s.recv(8)
 
             if not buf:
                 return
