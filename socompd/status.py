@@ -2,17 +2,17 @@ import time
 import socket
 
 from socompd import dev, mpdCommand, mpdIdleCommand
-from socompd.events import event_state, event_thread
+from socompd.events import event_state
 from socompd.playlist import playlist_store
 
 @mpdIdleCommand()
 def Idle(s):
     while True:
-        event_thread.lock.acquire()
-        orig_playlist_count = event_thread.playlist_count
-        orig_transport_count = event_thread.transport_count
-        orig_rendering_count = event_thread.rendering_count
-        event_thread.lock.release()
+        event_state.lock.acquire()
+        orig_playlist_count = event_state.playlist_count
+        orig_transport_count = event_state.transport_count
+        orig_rendering_count = event_state.rendering_count
+        event_state.lock.release()
 
         buf = None
 
@@ -32,11 +32,11 @@ def Idle(s):
         except socket.error:
             return
 
-        event_thread.lock.acquire()
-        new_playlist_count = event_thread.playlist_count
-        new_transport_count = event_thread.transport_count
-        new_rendering_count = event_thread.rendering_count
-        event_thread.lock.release()            
+        event_state.lock.acquire()
+        new_playlist_count = event_state.playlist_count
+        new_transport_count = event_state.transport_count
+        new_rendering_count = event_state.rendering_count
+        event_state.lock.release()            
 
         if new_playlist_count > orig_playlist_count:
             try:
