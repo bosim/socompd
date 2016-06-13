@@ -41,6 +41,20 @@ class EventTransportThread(threading.Thread):
             except Empty:
                 pass
 
+class EventRenderingThread(threading.Thread):
+    def __init__(self):
+        super(EventRenderingThread, self).__init__()
+        self.sub_rendering = dev.renderingControl.subscribe()
+
+    def run(self):
+        while True:
+            try:
+                event = self.sub_rendering.events.get(timeout=1.0)
+
+                event_state.volume = event.variables.get('volume').get('Master')
+                event_state.rendering_count = event_state.rendering_count + 1
+            except Empty:
+                pass
 
 class EventQueueThread(threading.Thread):
     def __init__(self):
@@ -58,26 +72,11 @@ class EventQueueThread(threading.Thread):
             except Empty:
                 pass
 
-class EventRenderingThread(threading.Thread):
-    def __init__(self):
-        super(EventRenderingThread, self).__init__()
-        self.sub_rendering = dev.renderingControl.subscribe()
-
-    def run(self):
-        while True:
-            try:
-                event = self.sub_rendering.events.get(timeout=1.0)
-
-                event_state.volume = event.variables.get('volume').get('Master')
-                event_state.rendering_count = event_state.rendering_count + 1
-            except Empty:
-                pass
-
             
 event_transport_thread = EventTransportThread()
 event_transport_thread.start()
-event_queue_thread = EventQueueThread()
-event_queue_thread.start()
 event_rendering_thread = EventRenderingThread()
 event_rendering_thread.start()
+event_queue_thread = EventQueueThread()
+event_queue_thread.start()
 
