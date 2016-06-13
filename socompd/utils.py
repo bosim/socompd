@@ -1,3 +1,19 @@
+funcs = {}
+idle_command = []
+
+def mpdCommand(name):
+    def decorator(func):
+        funcs[name] = func
+        return func
+
+    return decorator
+
+def mpdIdleCommand():
+    def decorator(func):
+        idle_command.append(func)
+        return func
+
+    return decorator
 
 def songToText(song):
     result = ""
@@ -13,4 +29,3 @@ def songToText(song):
         result += "Album: " + str(song["album"]) + "\n"
 
     return result
-

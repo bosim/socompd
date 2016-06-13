@@ -3,7 +3,7 @@ import socketserver
 
 import shlex
 
-from . import funcs, idle_command
+from socompd.utils import funcs, idle_command
 
 class MpdHandler(socketserver.StreamRequestHandler):
     def processCommand(self, cmd, args, command_list=False):
