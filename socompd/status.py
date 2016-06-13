@@ -8,11 +8,9 @@ from socompd.playlist import playlist_store
 @mpdIdleCommand()
 def Idle(s):
     while True:
-        event_state.lock.acquire()
         orig_playlist_count = event_state.playlist_count
         orig_transport_count = event_state.transport_count
         orig_rendering_count = event_state.rendering_count
-        event_state.lock.release()
 
         buf = None
 
@@ -32,11 +30,9 @@ def Idle(s):
         except socket.error:
             return
 
-        event_state.lock.acquire()
         new_playlist_count = event_state.playlist_count
         new_transport_count = event_state.transport_count
         new_rendering_count = event_state.rendering_count
-        event_state.lock.release()            
 
         if new_playlist_count > orig_playlist_count:
             try:
