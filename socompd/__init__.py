@@ -10,6 +10,7 @@ class Devices(object):
     def __init__(self):
         self.devs = list(soco.discover())
         self.dev = self.devs[0]
+        self.groups = list(self.dev.all_groups)
         self.event_state = State()
 
         self.startEventThreads()
@@ -22,8 +23,8 @@ class Devices(object):
         self.event_queue_thread = EventQueueThread(self)
         self.event_queue_thread.start()
 
-    def getDevices(self):
-        return self.devs
+    def getGroups(self):
+        return self.groups
 
     def selectDevice(self, dev):
         self.dev = dev

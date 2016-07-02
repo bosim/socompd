@@ -58,23 +58,25 @@ def outputs():
     result = ""
 
     dev = devices.currentDevice()
-    devs = devices.getDevices()
+    groups = devices.getGroups()
 
-    for (i, output) in enumerate(devs):
+    for (i, group) in enumerate(groups):
         result += "outputid: %d\n" % i
-        result += "outputname: %s (%s)\n" % (
-            output.player_name, output.ip_address
+        result += "outputname: %s (%s -%s)\n" % (
+            group.uid,
+            group.coordinator.player_name, 
+            group.coordinator.ip_address
         )
 
-        result += "outputenabled: %d\n" % (dev.uid == output.uid)
+        result += "outputenabled: %d\n" % (dev.uid == group.coordinator.uid)
 
     return result
 
 @mpdCommand("enableoutput")
 def enableOutput(id):
     id = int(id)
-    devs = devices.getDevices()
+    devs = devices.getGroups()
 
     if id < len(devs):
-        devices.selectDevice(devs[id])
+        devices.selectDevice(devs[id].coordinator)
 
