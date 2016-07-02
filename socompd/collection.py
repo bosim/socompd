@@ -1,11 +1,13 @@
 import urllib
 from soco.music_library import MusicLibrary
 
-from . import dev, mpdCommand
+from . import devices, mpdCommand
 
 
 @mpdCommand("lsinfo")
 def lsInfo(directory=None):
+    dev = devices.currentDevice()
+
     music_library = MusicLibrary(dev)
     result = ""
     if directory and directory != "/":

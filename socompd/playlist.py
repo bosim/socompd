@@ -1,7 +1,6 @@
 import time
 
-from socompd import dev, mpdCommand
-from socompd.events import event_state
+from socompd import devices, mpdCommand
 from socompd.utils import songToText
 
 class playlistStore(object):
@@ -10,7 +9,9 @@ class playlistStore(object):
         self.version = 0
 
     def getCurrentPlaylist(self):
-        if self.playlist and self.version == event_state.playlist_version:
+        dev = devices.currentDevice()
+
+        if self.playlist and self.version == devices.event_state.playlist_version:
             return self.playlist
         else:
             self.playlist = []
@@ -26,7 +27,7 @@ class playlistStore(object):
 
                 self.playlist.append(song)
             
-            self.version = event_state.playlist_version
+            self.version = devices.event_state.playlist_version
 
             return self.playlist
 
@@ -46,6 +47,8 @@ def playlistInfo(position=None):
 
 @mpdCommand("add")
 def add(uri):
+    dev = devices.currentDevice()
+
     if uri.startswith('http://'):
         uri = uri.replace('http://', 'x-rincon-mp3radio://')
     if uri.find('#') >= 0:
@@ -59,15 +62,18 @@ def addId(uri):
 
 @mpdCommand("clear")
 def clear():
+    dev = devices.currentDevice()
     dev.clear_queue()
 
 @mpdCommand("delete")
 def delete(id):
+    dev = devices.currentDevice()
     pos = int(id)
     dev.remove_from_queue(pos)
 
 @mpdCommand("deleteId")
 def deleteId(id):
+    dev = devices.currentDevice()
     pos = int(id)
     dev.remove_from_queue(pos)
 

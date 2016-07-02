@@ -1,24 +1,30 @@
-from . import dev, mpdCommand
+from . import devices, mpdCommand
 
 @mpdCommand("playid")
 def playId(songId):
+    dev = devices.currentDevice()
+
     id = int(songId)
     dev.play_from_queue(id)
 
 @mpdCommand("play")
 def play(aux=None):
+    dev = devices.currentDevice()
     dev.play()
 
 @mpdCommand("next")
 def next():
+    dev = devices.currentDevice()
     dev.next()
 
 @mpdCommand("previous")
 def previous():
+    dev = devices.currentDevice()
     dev.previous()
 
 @mpdCommand("pause")
 def pause(aux=None):
+    dev = devices.currentDevice()
     info = dev.get_current_transport_info()
 
     if info.get('current_transport_state') == "PAUSED_PLAYBACK":
@@ -28,10 +34,13 @@ def pause(aux=None):
 
 @mpdCommand("setvol")
 def setVol(vol):
+    dev = devices.currentDevice()
     dev.volume = int(vol)
 
 @mpdCommand("seekid")
 def seekId(id, pos):
+    dev = devices.currentDevice()
+
     seconds = int(pos)
 
     hours = seconds // 3600
@@ -45,9 +54,27 @@ def seekId(id, pos):
 
 @mpdCommand("outputs")
 def outputs():
+    print("Outputs called")
     result = ""
-    result += "outputid: 0\n"
-    result += "outputname: test\n"
-    result += "outputenabled: 1\n"
-    
+
+    dev = devices.currentDevice()
+    devs = devices.getDevices()
+
+    for (i, output) in enumerate(devs):
+        result += "outputid: %d\n" % i
+        result += "outputname: %s (%s)\n" % (
+            output.player_name, output.ip_address
+        )
+
+        result += "outputenabled: %d\n" % (dev.uid == output.uid)
+
     return result
+
+@mpdCommand("enableoutput")
+def enableOutput(id):
+    id = int(id)
+    devs = devices.getDevices()
+
+    if id < len(devs):
+        devices.selectDevice(devs[id])
+

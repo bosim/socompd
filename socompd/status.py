@@ -1,16 +1,15 @@
 import time
 import socket
 
-from socompd import dev, mpdCommand, mpdIdleCommand
-from socompd.events import event_state
+from socompd import devices, mpdCommand, mpdIdleCommand
 from socompd.playlist import playlist_store
 
 @mpdIdleCommand()
 def Idle(s):
     while True:
-        orig_playlist_count = event_state.playlist_count
-        orig_transport_count = event_state.transport_count
-        orig_rendering_count = event_state.rendering_count
+        orig_playlist_count = devices.event_state.playlist_count
+        orig_transport_count = devices.event_state.transport_count
+        orig_rendering_count = devices.event_state.rendering_count
 
         buf = None
 
@@ -30,9 +29,9 @@ def Idle(s):
         except socket.error:
             return
 
-        new_playlist_count = event_state.playlist_count
-        new_transport_count = event_state.transport_count
-        new_rendering_count = event_state.rendering_count
+        new_playlist_count = devices.event_state.playlist_count
+        new_transport_count = devices.event_state.transport_count
+        new_rendering_count = devices.event_state.rendering_count
 
         if new_playlist_count > orig_playlist_count:
             try:
@@ -54,6 +53,7 @@ def Idle(s):
 
 @mpdCommand("currentsong")
 def currentSong():
+    dev = devices.currentDevice()
     current_song = dev.get_current_track_info()
 
     result = ""
@@ -69,9 +69,10 @@ def currentSong():
 
 @mpdCommand("status")
 def status():
+    dev = devices.currentDevice()
     result = ''
 
-    state = event_state.transport_state
+    state = devices.event_state.transport_state
         
     if state == 'PAUSED_PLAYBACK':
         result += 'state: pause\n'
@@ -80,7 +81,7 @@ def status():
     elif state == 'PLAYING':
         result += 'state: play\n'
 
-    result += 'volume: ' + str(event_state.volume) + '\n'
+    result += 'volume: ' + str(devices.event_state.volume) + '\n'
         
     track = dev.get_current_track_info()
 
@@ -105,6 +106,7 @@ def status():
 
 @mpdCommand("stats")
 def stats():
+    dev = devices.currentDevice()
     result = ""
     result += "artists: %d\n" % len(dev.music_library.get_artists(max_items=9999))
     result += "albums: %d\n" % len(dev.music_library.get_albums(max_items=9999))
